@@ -1,10 +1,11 @@
 import { EPendencyState } from "../enums/e-pendency-state";
 import { StateMachine } from "../interfaces/state-machine";
-import { PendencyType, PendencyTypeProps } from "./pendency-type.model";
+import { PendencyFlowService } from "../services/pendency-flow.service";
+import { PendencyType } from "./pendency-type.model";
 
 interface PendencyProps {
   state: EPendencyState | null;
-  pendency_type: PendencyTypeProps;
+  pendency_type: PendencyType;
   created_at: Date;
   updated_at: Date;
 }
@@ -16,12 +17,17 @@ export class Pendency extends StateMachine<
   pendencyID,
   PendencyProps
 > {
-  static create(pendency_type: PendencyTypeProps): Pendency {
+  static create(pendency_type: PendencyType): Pendency {
     const pendency = new Pendency({
       pendency_type,
     });
     pendency.initialState();
-    pendency.validate();
+
+    PendencyFlowService.validate(
+      pendency,
+      pendency.getProperties().pendency_type
+    );
+
     return pendency;
   }
 
@@ -34,12 +40,6 @@ export class Pendency extends StateMachine<
     });
   }
 
-  getPreviousState(): EPendencyState | null {
-    throw new Error("Method not implemented.");
-  }
-  getFirstState(): EPendencyState | null {
-    return EPendencyState.PENDENT;
-  }
   getState(): EPendencyState | null {
     return this.getProperties().state;
   }
@@ -49,14 +49,5 @@ export class Pendency extends StateMachine<
   }
   initialState(): void {
     this.getProperties().state = EPendencyState.PENDENT;
-  }
-
-  private validate(): void {
-    if (this.getState === null) {
-      throw new Error("Está pendencia ainda não teve seu estado inicializado");
-    }
-    if (this.getState() !== this.getFirstState()) {
-      throw new Error("Está pendencia foi criada com o estado corrompido");
-    }
   }
 }

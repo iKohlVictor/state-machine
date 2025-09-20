@@ -1,5 +1,5 @@
 import { EPendencyState } from "../enums/e-pendency-state";
-import { FlowMachine } from "../interfaces/state-machine";
+import { FlowMachine } from "../interfaces/flow-machine";
 
 export interface PendencyTypeProps {
   name: string;
