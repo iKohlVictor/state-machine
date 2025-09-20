@@ -20,4 +20,14 @@ export class PendencyFlowService {
     const prev = type.getPreviousState(pendency.getState()!);
     pendency.changeState(prev);
   }
+
+  static initialState(pendency: Pendency, type: PendencyType): void {
+    const firstState = type.getFirstState();
+
+    if (!firstState) {
+      throw new Error("Não foi possível encontrar o estado inicial");
+    }
+
+    pendency.changeState(firstState);
+  }
 }

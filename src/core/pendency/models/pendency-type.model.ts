@@ -1,6 +1,26 @@
 import { EPendencyState } from "../enums/e-pendency-state";
-import { FlowMachine } from "../interfaces/flow-machine";
+import { EPendencyTypes } from "../enums/e-pendency-types";
+import { FlowMachine } from "../../../shared/interfaces/flow-machine";
 
+const flow: Record<EPendencyTypes, EPendencyState[]> = {
+  [EPendencyTypes.ADITIVO]: [EPendencyState.DONE],
+  [EPendencyTypes.ASSINATURAS_COMPLETAS]: [
+    EPendencyState.PENDENT,
+    EPendencyState.DONE,
+  ],
+  [EPendencyTypes.PENHOR]: [
+    EPendencyState.PENDENT,
+    EPendencyState.PENDENT_VALIDATE,
+    EPendencyState.DONE,
+    EPendencyState.CANCELED,
+  ],
+  [EPendencyTypes.FIDUNCIARIA]: [
+    EPendencyState.PENDENT,
+    EPendencyState.PENDENT_VALIDATE,
+    EPendencyState.DONE,
+    EPendencyState.CANCELED,
+  ],
+};
 export interface PendencyTypeProps {
   name: string;
   description: string | null;
@@ -17,26 +37,6 @@ export class PendencyType extends FlowMachine<
   PendencyTypeID,
   PendencyTypeProps
 > {
-  private flow: Record<EPendencyTypes, EPendencyState[]> = {
-    [EPendencyTypes.ADITIVO]: [EPendencyState.DONE],
-    [EPendencyTypes.ASSINATURAS_COMPLETAS]: [
-      EPendencyState.PENDENT,
-      EPendencyState.DONE,
-    ],
-    [EPendencyTypes.PENHOR]: [
-      EPendencyState.PENDENT,
-      EPendencyState.PENDENT_VALIDATE,
-      EPendencyState.DONE,
-      EPendencyState.CANCELED,
-    ],
-    [EPendencyTypes.FIDUNCIARIA]: [
-      EPendencyState.PENDENT,
-      EPendencyState.PENDENT_VALIDATE,
-      EPendencyState.DONE,
-      EPendencyState.CANCELED,
-    ],
-  };
-
   static create(
     name: string,
     description: string | null,
@@ -67,7 +67,7 @@ export class PendencyType extends FlowMachine<
   }
 
   getNextState(actualState: EPendencyState): EPendencyState {
-    const states = this.flow[this.getProperties().type];
+    const states = flow[this.getProperties().type];
 
     if (!states.includes(actualState)) {
       throw new Error("O estado atual não faz parte desse tipo de pendencia");
@@ -87,7 +87,7 @@ export class PendencyType extends FlowMachine<
     return nextState;
   }
   getPreviousState(actualState: EPendencyState): EPendencyState {
-    const states = this.flow[this.getProperties().type];
+    const states = flow[this.getProperties().type];
 
     if (!states.includes(actualState)) {
       throw new Error("O estado atual não faz parte desse tipo de pendencia");
@@ -109,13 +109,6 @@ export class PendencyType extends FlowMachine<
   }
 
   getFirstState(): EPendencyState | null {
-    return this.flow[this.getProperties().type][0] ?? null;
+    return flow[this.getProperties().type][0] ?? null;
   }
-}
-
-enum EPendencyTypes {
-  ADITIVO = 1,
-  ASSINATURAS_COMPLETAS = 2,
-  PENHOR = 3,
-  FIDUNCIARIA = 4,
 }

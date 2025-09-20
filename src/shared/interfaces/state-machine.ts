@@ -6,5 +6,4 @@ export abstract class StateMachine<State, Identify, Properties> extends Model<
 > {
   abstract getState(): State | null;
   abstract changeState(state: State): void;
-  abstract initialState(): void;
 }

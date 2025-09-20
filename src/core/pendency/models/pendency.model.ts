@@ -1,5 +1,5 @@
 import { EPendencyState } from "../enums/e-pendency-state";
-import { StateMachine } from "../interfaces/state-machine";
+import { StateMachine } from "../../../shared/interfaces/state-machine";
 import { PendencyFlowService } from "../services/pendency-flow.service";
 import { PendencyType } from "./pendency-type.model";
 
@@ -21,12 +21,9 @@ export class Pendency extends StateMachine<
     const pendency = new Pendency({
       pendency_type,
     });
-    pendency.initialState();
 
-    PendencyFlowService.validate(
-      pendency,
-      pendency.getProperties().pendency_type
-    );
+    PendencyFlowService.initialState(pendency, pendency_type);
+    PendencyFlowService.validate(pendency, pendency_type);
 
     return pendency;
   }
@@ -46,8 +43,5 @@ export class Pendency extends StateMachine<
   changeState(state: EPendencyState): void {
     this.getProperties().state = state;
     this.getProperties().updated_at = new Date();
-  }
-  initialState(): void {
-    this.getProperties().state = EPendencyState.PENDENT;
   }
 }
