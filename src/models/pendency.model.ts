@@ -1,6 +1,6 @@
 import { EPendencyState } from "../enums/e-pendency-state";
 import { StateMachine } from "../interfaces/state-machine";
-import { PendencyTypeProps } from "./pendency-type.model";
+import { PendencyType, PendencyTypeProps } from "./pendency-type.model";
 
 interface PendencyProps {
   state: EPendencyState | null;
@@ -16,14 +16,16 @@ export class Pendency extends StateMachine<
   pendencyID,
   PendencyProps
 > {
-  static create(props: PendencyProps): Pendency {
-    const pendency = new Pendency(props);
+  static create(pendency_type: PendencyTypeProps): Pendency {
+    const pendency = new Pendency({
+      pendency_type,
+    });
     pendency.initialState();
     pendency.validate();
     return pendency;
   }
 
-  constructor(props: PendencyProps) {
+  constructor(props: Pick<PendencyProps, "pendency_type">) {
     super({
       created_at: new Date(),
       updated_at: new Date(),
