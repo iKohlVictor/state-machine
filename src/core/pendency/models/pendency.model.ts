@@ -3,6 +3,7 @@ import { StateMachine } from "../../../shared/interfaces/state-machine";
 import { PendencyFlowService } from "../services/pendency-flow.service";
 import { PendencyType } from "./pendency-type.model";
 import { randomUUID } from "crypto";
+import { UuidVO } from "../../../shared/interfaces/uuid";
 
 interface PendencyProps {
   state: EPendencyState | null;
@@ -11,7 +12,7 @@ interface PendencyProps {
   updated_at: Date;
 }
 
-type pendencyID = string;
+type pendencyID = UuidVO;
 
 export class Pendency extends StateMachine<
   EPendencyState,
@@ -19,9 +20,12 @@ export class Pendency extends StateMachine<
   PendencyProps
 > {
   static create(pendency_type: PendencyType): Pendency {
-    const pendency = new Pendency({
-      pendency_type,
-    });
+    const pendency = new Pendency(
+      {
+        pendency_type,
+      },
+      UuidVO.create()
+    );
 
     PendencyFlowService.initialState(pendency, pendency_type);
     PendencyFlowService.validate(pendency, pendency_type);
@@ -29,7 +33,7 @@ export class Pendency extends StateMachine<
     return pendency;
   }
 
-  constructor(props: Pick<PendencyProps, "pendency_type">, id?: string) {
+  constructor(props: Pick<PendencyProps, "pendency_type">, id?: UuidVO) {
     super(
       {
         created_at: new Date(),
@@ -37,7 +41,7 @@ export class Pendency extends StateMachine<
         pendency_type: props.pendency_type,
         state: null,
       },
-      id ?? randomUUID()
+      id
     );
   }
 

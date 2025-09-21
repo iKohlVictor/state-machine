@@ -2,6 +2,7 @@ import { EPendencyState } from "../enums/e-pendency-state";
 import { EPendencyTypes } from "../enums/e-pendency-types";
 import { FlowMachine } from "../../../shared/interfaces/flow-machine";
 import { randomUUID } from "crypto";
+import { UuidVO } from "../../../shared/interfaces/uuid";
 
 const flow: Record<EPendencyTypes, EPendencyState[]> = {
   [EPendencyTypes.ADITIVO]: [EPendencyState.DONE],
@@ -31,7 +32,7 @@ export interface PendencyTypeProps {
   type: EPendencyTypes;
 }
 
-type PendencyTypeID = string;
+type PendencyTypeID = UuidVO;
 
 export class PendencyType extends FlowMachine<
   EPendencyState,
@@ -43,13 +44,16 @@ export class PendencyType extends FlowMachine<
     description: string | null,
     type: EPendencyTypes
   ): PendencyType {
-    const pendencyType = new PendencyType({ name, description, type });
+    const pendencyType = new PendencyType(
+      { name, description, type },
+      UuidVO.create()
+    );
     pendencyType.validate();
     return pendencyType;
   }
   constructor(
     props: Pick<PendencyTypeProps, "name" | "description" | "type">,
-    id?: string
+    id?: UuidVO
   ) {
     super(
       {
@@ -60,7 +64,7 @@ export class PendencyType extends FlowMachine<
         is_active: true,
         type: props.type,
       },
-      id ?? randomUUID()
+      id
     );
   }
 

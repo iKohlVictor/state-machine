@@ -1,5 +1,5 @@
-import { randomUUID } from "crypto";
 import { Model } from "../../../shared/interfaces/model";
+import { UuidVO } from "../../../shared/interfaces/uuid";
 
 interface UserProps {
   name: string;
@@ -8,19 +8,22 @@ interface UserProps {
   profile: "ADMIN" | "USER" | "CLIENT";
 }
 
-type UserID = string;
+type UserID = UuidVO;
 
 export class User extends Model<UserID, UserProps> {
   static create(props: Pick<UserProps, "name" | "profile">): User {
-    const user = new User({
-      name: props.name,
-      profile: props.profile,
-    });
+    const user = new User(
+      {
+        name: props.name,
+        profile: props.profile,
+      },
+      UuidVO.create()
+    );
 
     return user;
   }
 
-  constructor(props: Pick<UserProps, "name" | "profile">, id?: string) {
+  constructor(props: Pick<UserProps, "name" | "profile">, id?: UuidVO) {
     super(
       {
         created_at: new Date(),
@@ -28,7 +31,7 @@ export class User extends Model<UserID, UserProps> {
         name: props.name,
         profile: props.profile,
       },
-      id ?? randomUUID()
+      id
     );
   }
 }
