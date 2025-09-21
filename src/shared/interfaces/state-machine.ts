@@ -1,4 +1,4 @@
-import { Model } from "./model.ts";
+import { Model } from "./model";
 
 export abstract class StateMachine<State, Identify, Properties> extends Model<
   Identify,

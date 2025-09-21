@@ -1,7 +1,6 @@
 import { EPendencyState } from "../enums/e-pendency-state";
 import { EPendencyTypes } from "../enums/e-pendency-types";
 import { FlowMachine } from "../../../shared/interfaces/flow-machine";
-import { randomUUID } from "crypto";
 import { UuidVO } from "../../../shared/interfaces/uuid";
 
 const flow: Record<EPendencyTypes, EPendencyState[]> = {
