@@ -1,12 +1,13 @@
 export abstract class Model<Identify, Properties> {
-  private readonly id?: Identify;
+  private readonly id: Identify | null;
   private readonly properties: Properties;
 
-  constructor(data: Properties) {
-    this.properties = data;
+  constructor(props: Properties, id?: Identify) {
+    this.id = id ?? null;
+    this.properties = props;
   }
 
-  getId(): Identify | undefined {
+  getId(): Identify | null {
     return this.id;
   }
 

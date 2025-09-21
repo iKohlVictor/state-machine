@@ -2,6 +2,7 @@ import { EPendencyState } from "../enums/e-pendency-state";
 import { StateMachine } from "../../../shared/interfaces/state-machine";
 import { PendencyFlowService } from "../services/pendency-flow.service";
 import { PendencyType } from "./pendency-type.model";
+import { randomUUID } from "crypto";
 
 interface PendencyProps {
   state: EPendencyState | null;
@@ -10,7 +11,7 @@ interface PendencyProps {
   updated_at: Date;
 }
 
-type pendencyID = number;
+type pendencyID = string;
 
 export class Pendency extends StateMachine<
   EPendencyState,
@@ -28,13 +29,16 @@ export class Pendency extends StateMachine<
     return pendency;
   }
 
-  constructor(props: Pick<PendencyProps, "pendency_type">) {
-    super({
-      created_at: new Date(),
-      updated_at: new Date(),
-      pendency_type: props.pendency_type,
-      state: null,
-    });
+  constructor(props: Pick<PendencyProps, "pendency_type">, id?: string) {
+    super(
+      {
+        created_at: new Date(),
+        updated_at: new Date(),
+        pendency_type: props.pendency_type,
+        state: null,
+      },
+      id ?? randomUUID()
+    );
   }
 
   getState(): EPendencyState | null {

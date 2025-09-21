@@ -1,6 +1,7 @@
 import { EPendencyState } from "../enums/e-pendency-state";
 import { EPendencyTypes } from "../enums/e-pendency-types";
 import { FlowMachine } from "../../../shared/interfaces/flow-machine";
+import { randomUUID } from "crypto";
 
 const flow: Record<EPendencyTypes, EPendencyState[]> = {
   [EPendencyTypes.ADITIVO]: [EPendencyState.DONE],
@@ -10,13 +11,13 @@ const flow: Record<EPendencyTypes, EPendencyState[]> = {
   ],
   [EPendencyTypes.PENHOR]: [
     EPendencyState.PENDENT,
-    EPendencyState.PENDENT_VALIDATE,
+    EPendencyState.PENDENT_VALIDATION,
     EPendencyState.DONE,
     EPendencyState.CANCELED,
   ],
   [EPendencyTypes.FIDUNCIARIA]: [
     EPendencyState.PENDENT,
-    EPendencyState.PENDENT_VALIDATE,
+    EPendencyState.PENDENT_VALIDATION,
     EPendencyState.DONE,
     EPendencyState.CANCELED,
   ],
@@ -30,7 +31,7 @@ export interface PendencyTypeProps {
   type: EPendencyTypes;
 }
 
-type PendencyTypeID = number;
+type PendencyTypeID = string;
 
 export class PendencyType extends FlowMachine<
   EPendencyState,
@@ -46,15 +47,21 @@ export class PendencyType extends FlowMachine<
     pendencyType.validate();
     return pendencyType;
   }
-  constructor(props: Pick<PendencyTypeProps, "name" | "description" | "type">) {
-    super({
-      name: props.name,
-      description: props.description,
-      created_at: new Date(),
-      updated_at: new Date(),
-      is_active: true,
-      type: props.type,
-    });
+  constructor(
+    props: Pick<PendencyTypeProps, "name" | "description" | "type">,
+    id?: string
+  ) {
+    super(
+      {
+        name: props.name,
+        description: props.description,
+        created_at: new Date(),
+        updated_at: new Date(),
+        is_active: true,
+        type: props.type,
+      },
+      id ?? randomUUID()
+    );
   }
 
   private validate(): void {
