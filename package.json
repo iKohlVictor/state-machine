@@ -12,11 +12,11 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc --watch",
-    "dev": "ts-node src/main.ts",
+    "build": "prisma generate && tsc",
+    "build:watch": "prisma generate && tsc --watch",
+    "dev": "prisma generate && ts-node src/main.ts",
     "start": "node dist/src/main.js",
-    "start:dev": "nest start --watch",
+    "start:dev": "prisma generate && nest start --watch",
     "start:prod": "node dist/src/main.js",
     "clean": "rm -rf dist",
     "type-check": "tsc --noEmit",
@@ -26,7 +26,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "seeds": "ts-node prisma/seed.ts"
   },
   "files": [
     "dist/**/*",
