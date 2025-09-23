@@ -1,0 +1,11 @@
+version: "3"
+services:
+  db:
+    image: postgres
+    container_name: state-machine
+    environment:
+      POSTGRES_PASSWORD: abacaxi
+      POSTGRES_USER: abacaxi
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"

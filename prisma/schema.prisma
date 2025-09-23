@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id               String             @id @default(uuid()) @db.Uuid
+  name             String
+  created_at       DateTime           @default(now()) @db.Timestamp(6)
+  updated_at       DateTime           @default(now()) @db.Timestamp(6)
+  deleted_at       DateTime?          @db.Timestamp(6)
+  is_active        Boolean
+  profile_id       Int
+  profile          profile            @relation(fields: [profile_id], references: [id])
+  pendency_history pendency_history[]
+}
+
+model profile {
+  id                                                Int                                                 @id @default(autoincrement())
+  name                                              String
+  description                                       String?
+  created_at                                        DateTime                                            @default(now()) @db.Timestamp(6)
+  updated_at                                        DateTime                                            @default(now()) @db.Timestamp(6)
+  deleted_at                                        DateTime?                                           @db.Timestamp(6)
+  is_active                                         Boolean
+  user                                              user[]
+  pendency_stage_transition_profiles                pendency_stage_transition_profiles[]
+  pendency_stage_transition_approval_group_profiles pendency_stage_transition_approval_group_profiles[]
+}
+
+model pendency_type {
+  id                        Int                         @id @default(autoincrement())
+  created_at                DateTime                    @default(now()) @db.Timestamp(6)
+  updated_at                DateTime                    @default(now()) @db.Timestamp(6)
+  deleted_at                DateTime?                   @db.Timestamp(6)
+  is_active                 Boolean
+  name                      String
+  description               String?
+  pendency                  pendency[]
+  pendency_stage_transition pendency_stage_transition[]
+}
+
+model pendency_stage {
+  id         Int        @id @default(autoincrement())
+  name       String
+  created_at DateTime   @default(now()) @db.Timestamp(6)
+  updated_at DateTime   @default(now()) @db.Timestamp(6)
+  deleted_at DateTime?  @db.Timestamp(6)
+  pendency   pendency[]
+}
+
+model pendency {
+  id                String             @id @default(uuid()) @db.Uuid
+  created_at        DateTime           @default(now()) @db.Timestamp(6)
+  updated_at        DateTime           @default(now()) @db.Timestamp(6)
+  deleted_at        DateTime?          @db.Timestamp(6)
+  pendency_type_id  Int
+  pendency_type     pendency_type      @relation(fields: [pendency_type_id], references: [id])
+  pendency_stage_id Int
+  pendency_stage    pendency_stage     @relation(fields: [pendency_stage_id], references: [id])
+  pendency_history  pendency_history[]
+}
+
+model pendency_history {
+  id              String   @id @default(uuid()) @db.Uuid
+  pendency_id     String   @db.Uuid
+  pendency        pendency @relation(fields: [pendency_id], references: [id])
+  from_stage_id   Int
+  to_stage_id     Int
+  from_profile_id Int?
+  to_profile_id   Int?
+  executed_by     String   @db.Uuid
+  user            user     @relation(fields: [executed_by], references: [id])
+  created_at      DateTime @db.Timestamp(6)
+  updated_at      DateTime @db.Timestamp(6)
+}
+
+model pendency_transition_rules {
+  id         String    @id @default(uuid()) @db.Uuid
+  rule_type  rule_type
+  rule_value String?
+  created_at DateTime  @db.Timestamp(6)
+  updated_at DateTime  @db.Timestamp(6)
+  deleted_at DateTime? @db.Timestamp(6)
+}
+
+model pendency_stage_transition {
+  id                                       String                                     @id @default(uuid()) @db.Uuid
+  created_at                               DateTime                                   @db.Timestamp(6)
+  updated_at                               DateTime                                   @db.Timestamp(6)
+  deleted_at                               DateTime?                                  @db.Timestamp(6)
+  pendency_type_id                         Int
+  pendency_type                            pendency_type                              @relation(fields: [pendency_type_id], references: [id])
+  from_stage_id                            Int
+  to_stage_id                              Int
+  is_default                               Boolean                                    @default(false)
+  pendency_stage_transition_profiles       pendency_stage_transition_profiles[]
+  pendency_stage_transition_approval_group pendency_stage_transition_approval_group[]
+}
+
+model pendency_stage_transition_profiles {
+  id                           String                    @id @default(uuid()) @db.Uuid
+  pendency_stage_transition_id String                    @db.Uuid
+  pendency_stage_transition    pendency_stage_transition @relation(fields: [pendency_stage_transition_id], references: [id])
+  profile_id                   Int
+  profile                      profile                   @relation(fields: [profile_id], references: [id])
+  auto_close                   Boolean                   @default(false)
+  allow_revert                 Boolean                   @default(false)
+  allow_reassign               Boolean                   @default(false)
+}
+
+model pendency_stage_transition_approval_group {
+  id                                                String                                              @id @default(uuid()) @db.Uuid
+  pendency_stage_transition_id                      String                                              @db.Uuid
+  pendency_stage_transition                         pendency_stage_transition                           @relation(fields: [pendency_stage_transition_id], references: [id])
+  min_approvals_required                            Int
+  pendency_stage_transition_approval_group_profiles pendency_stage_transition_approval_group_profiles[]
+}
+
+model pendency_stage_transition_approval_group_profiles {
+  pendency_stage_transition_approval_group_id String @db.Uuid
+  profile_id                                  Int
+
+  pendency_stage_transition_approval_group pendency_stage_transition_approval_group @relation(fields: [pendency_stage_transition_approval_group_id], references: [id])
+  profile                                  profile                                  @relation(fields: [profile_id], references: [id])
+
+  @@id([pendency_stage_transition_approval_group_id, profile_id])
+}
+
+enum rule_type {
+  MIN_DAYS_TO_OPEN
+}
