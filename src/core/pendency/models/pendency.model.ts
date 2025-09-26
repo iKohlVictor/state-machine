@@ -1,8 +1,8 @@
 import { EPendencyState } from "../enums/e-pendency-state";
-import { StateMachine } from "../../../shared/interfaces/state-machine";
+import { StateMachine } from "../../types/state-machine";
 import { PendencyFlowService } from "../services/pendency-flow.service";
 import { PendencyType } from "./pendency-type.model";
-import { UuidVO } from "../../../shared/interfaces/uuid";
+import { UuidVO } from "../../types/uuid";
 
 interface PendencyProps {
   state: EPendencyState | null;

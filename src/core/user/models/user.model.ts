@@ -1,5 +1,5 @@
-import { Model } from "../../../shared/interfaces/model";
-import { UuidVO } from "../../../shared/interfaces/uuid";
+import { Model } from "../../types/model";
+import { UuidVO } from "../../types/uuid";
 
 interface UserProps {
   name: string;
